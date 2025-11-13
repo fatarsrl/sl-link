@@ -250,6 +250,7 @@ private:
     AudioDeviceManager audioDeviceManager;
     AudioDeviceSelectorComponent audioSetupComp;
     String deviceName;
+	uint8_t iconOffset=0;
 
     std::vector<MidiMessage> queueIn;
     std::vector<MidiMessage> queueOut;

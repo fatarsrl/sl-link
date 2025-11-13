@@ -140,7 +140,7 @@ void SysexComponent::sendIcon(uint8_t packet_num)
 	sysexMessage.push_back(packet_num);
 
 	// Based on the packet number we choose the starting row of the image
-	const uint16_t* slice = &(Icons[connectedDeviceID%10][32 * packet_num * 2]);
+	const uint16_t* slice = &(Icons[(connectedDeviceID+iconOffset)%10][32 * packet_num * 2]);
 	
 	for (uint16_t i = 0; i < (2*32); i++)
 	{
@@ -425,10 +425,24 @@ void SysexComponent::handleButtonMessage(uint8_t item_num, uint8_t item_val)
             if (item_val == 1)
             {
                 DBG("SELECT_ZOOM_BUTTON_1 PUSH");
+                iconOffset++;
+                sendIcon(0);
             }
             else if (item_val == 2)
             {
                 DBG("SELECT_ZOOM_BUTTON_1 LONG PUSH");
+            }
+            break;
+        case SELECT_ZOOM_BUTTON_2:
+            if (item_val == 1)
+            {
+                DBG("SELECT_ZOOM_BUTTON_2 PUSH");
+                iconOffset--;
+                sendIcon(0);
+            }
+            else if (item_val == 2)
+            {
+                DBG("SELECT_ZOOM_BUTTON_2 LONG PUSH");
             }
             break;
     }

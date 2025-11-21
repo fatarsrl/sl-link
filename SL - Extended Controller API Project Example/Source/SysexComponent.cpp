@@ -14,13 +14,14 @@
 
 #include "SysexComponent.h"
 
-const uint8_t FATAR_SYSEX_ID[3] { 0x00, 0x20, 0x1A };
-const uint8_t PRODUCT_ID = 0x16;
-const uint8_t REMOTE_HOST_ID = 0x01; // 0x01 NumaPlayer; 0x02 Camelot; 0x03 MyDevice etc.
-const uint8_t REMOTE_DEVICE_ID = 0x00;
+constexpr uint8_t FATAR_SYSEX_ID[3] { 0x00, 0x20, 0x1A };
+constexpr uint8_t PRODUCT_ID = 0x16;
+constexpr uint8_t REMOTE_HOST_ID = 0x01; // 0x01 NumaPlayer; 0x02 Camelot; 0x03 MyDevice etc.
+constexpr uint8_t REMOTE_DEVICE_ID = 0x00;
+constexpr uint8_t DEVICE_NUMBER = 22;
 const String MY_DEVICE_NAME = "MY DEVICE";
 
-#define BASE_MESSAGE {FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID, REMOTE_HOST_ID }
+#define BASE_MESSAGE {FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID }
 
 SysexComponent::SysexComponent()
 : audioSetupComp(audioDeviceManager, 0, 0, 0, 0, true, true, false, false)
@@ -33,9 +34,10 @@ SysexComponent::SysexComponent()
         audioDeviceManager.addMidiInputDeviceCallback({}, this);
         audioDeviceManager.initialise(0, 0, nullptr, true, deviceName, nullptr);
     });
+
+    deviceStatus.assign(DEVICE_NUMBER, DEVICE_UNIDENTIFIED);
     
     startTimer(TIMER_MIDI_PORT, 1500);
-    startTimer(TIMER_IDENTITY, 200);
     startTimer(TIMER_MIDI_OUT, 1);
     startTimer(TIMER_MIDI_IN, 1);
 }
@@ -77,15 +79,72 @@ void SysexComponent::resized()
     audioSetupComp.setBounds(0, 0, 500, 500);
 }
 
-void SysexComponent::sendIdentity()
+void SysexComponent::sendIdentificationRequest(unsigned short deviceNum)
 {
-	static unsigned char app = 0;
-
     // Start with the manufacturer ID
-	std::vector<uint8_t> sysexMessage = { FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID, REMOTE_HOST_ID };
+    std::vector<uint8_t> sysexMessage = { FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID };
+
+    if (deviceID.size() < deviceNum + 1)
+    {
+        std::array<uint8_t,2> DID = { juce::Random::getSystemRandom().nextInt() & 0x7F, juce::Random::getSystemRandom().nextInt() & 0x7F };
+        deviceID.push_back(DID);
+    }
+
+    if (deviceNum == DEVICE_NUMBER - 1) deviceNum = 0;
+
+    // Every time send a different DeviceID
+    sysexMessage.push_back(deviceID[deviceNum][0]);
+    sysexMessage.push_back(deviceID[deviceNum][1]);
+
+    // tipo item System Login
+    sysexMessage.push_back(ITEM_IDENTIFICATION);
+
+    /* function:
+     0 → login request,
+     1 → login confirmation,
+     2 → logout request,
+     3 → logout confirmation,
+     4 → standby notification (app is connected but can’t drive SL),
+     5 → restart notification (app can restart its activity but first it must do a complete display refresh)
+     6 → login recall (login with icon stored in the RAM)
+     7 → send icon
+     8 → icon ack
+     9 → icon nack
+     */
+    sysexMessage.push_back(IDENTIFICATION_REQUEST);
+
+    // Append the DeviceID for reference
+    String text = MY_DEVICE_NAME + " " + String(deviceNum);
+
+    // Cycles between 20 DeviceIDs
+    //deviceNum = (deviceNum + 1) % DEVICE_NUMBER;
+
+
+    // caratteri della stringa
+    for (char c : text)
+    {
+        sysexMessage.push_back(static_cast<uint8_t>(c));
+    }
+
+    // terminatore di stringa
+    sysexMessage.push_back(0x00);
+
+    // Making a sysex message, it means to prepend 0xf0 and append 0xf7
+    MidiMessage sysMsg = MidiMessage::createSysExMessage(sysexMessage.data(), int(sysexMessage.size()));
+
+    // Send the message to the MIDI output
+    sendMidiMessage(sysMsg);
+}
+
+void SysexComponent::sendIdentity(unsigned short deviceNum)
+{
+   
+    // Start with the manufacturer ID
+	std::vector<uint8_t> sysexMessage = { FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID };
 
 	// Every time send a different DeviceID
-	sysexMessage.push_back(REMOTE_DEVICE_ID+app);
+	sysexMessage.push_back(deviceID[deviceNum][0]);
+	sysexMessage.push_back(deviceID[deviceNum][1]);
 
     // tipo item System Login
     sysexMessage.push_back(ITEM_SYSTEM_SYSTEM);
@@ -105,20 +164,20 @@ void SysexComponent::sendIdentity()
     sysexMessage.push_back(SYSTEM_LOGIN_REQUEST);
     
 	// Append the DeviceID for reference
-    String text = MY_DEVICE_NAME + " " + String(app);
+ //   String text = MY_DEVICE_NAME + " " + String(app);
 
-	// Cycles between 20 DeviceIDs
-	app = (app + 1) % 20;
+	//// Cycles between 20 DeviceIDs
+	//app = (app + 1) % DEVICE_NUMBER;
 
-    
-    // caratteri della stringa
-    for (char c : text)
-    {
-        sysexMessage.push_back(static_cast<uint8_t>(c));
-    }
-    
-    // terminatore di stringa
-    sysexMessage.push_back(0x00);
+ //   
+ //   // caratteri della stringa
+ //   for (char c : text)
+ //   {
+ //       sysexMessage.push_back(static_cast<uint8_t>(c));
+ //   }
+ //   
+ //   // terminatore di stringa
+ //   sysexMessage.push_back(0x00);
     
     // Making a sysex message, it means to prepend 0xf0 and append 0xf7
     MidiMessage sysMsg = MidiMessage::createSysExMessage(sysexMessage.data(), int(sysexMessage.size()));
@@ -130,17 +189,18 @@ void SysexComponent::sendIdentity()
 void SysexComponent::sendIcon(uint8_t packet_num)
 {
 	// Start with the header with  fixed HostID
-	std::vector<uint8_t> sysexMessage = { FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID, REMOTE_HOST_ID };
+    std::vector<uint8_t> sysexMessage = BASE_MESSAGE;//{ FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID };
 
 	// Append the connected DeviceID
-	sysexMessage.push_back(connectedDeviceID);
+	sysexMessage.push_back(connectedDeviceID[0]);
+	sysexMessage.push_back(connectedDeviceID[1]);
 
 	sysexMessage.push_back(ITEM_SYSTEM_SYSTEM);
 	sysexMessage.push_back(SYSTEM_SEND_ICON);
 	sysexMessage.push_back(packet_num);
 
 	// Based on the packet number we choose the starting row of the image
-	const uint16_t* slice = &(Icons[(connectedDeviceID+iconOffset)%10][32 * packet_num * 2]);
+	const uint16_t* slice = &(Icons[(connectedDeviceIDX+iconOffset)%10][32 * packet_num * 2]);
 	
 	for (uint16_t i = 0; i < (2*32); i++)
 	{
@@ -170,7 +230,8 @@ void SysexComponent::logoutRequest()
 {
     // Start with the header
 	std::vector<uint8_t> sysexMessage = BASE_MESSAGE;//{ FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID, REMOTE_HOST_ID };
-	sysexMessage.push_back(connectedDeviceID);
+	sysexMessage.push_back(connectedDeviceID[0]);
+	sysexMessage.push_back(connectedDeviceID[1]);
     // codice per identificare un messaggio di sistema
     sysexMessage.push_back(ITEM_SYSTEM_SYSTEM);
     
@@ -196,13 +257,38 @@ void SysexComponent::handleIncomingMidiMessage(MidiInput* source, const MidiMess
     queueIn.push_back(message);
 }
 
+void SysexComponent::manageLogin()
+{
+    static int deviceNum = 0;
+
+    switch (deviceStatus[deviceNum])
+    {
+    case DEVICE_UNIDENTIFIED:
+        sendIdentificationRequest(deviceNum);
+        DBG("IDENTIFICATION REQUEST, DEVICE " + String(deviceNum) + ", ID#1=" + String(deviceID[deviceNum][0]) + "ID#2=" + String(deviceID[deviceNum][1]));
+        break;
+    case DEVICE_IDENTIFIED:
+        sendIdentity(deviceNum);
+        break;
+    default:
+        break;
+    }
+    deviceNum = (deviceNum + 1)%DEVICE_NUMBER;
+}
+
 void SysexComponent::timerCallback(int timerID)
 {
+    static unsigned short wait = 0;
     switch (timerID)
     {
         case TIMER_IDENTITY:
         {
-            sendIdentity();
+            if (wait < 10)
+            {
+                wait++;
+                return;
+            }
+            manageLogin();
         }
             break;
             
@@ -233,6 +319,8 @@ void SysexComponent::timerCallback(int timerID)
                     {
                         DBG("Connect MIDI Output: " << LINK_PORT_OUT);
                         audioDeviceManager.setDefaultMidiOutputDevice(item.identifier);
+
+                        startTimer(TIMER_IDENTITY, 200);
                     }
                 }
             }
@@ -278,39 +366,50 @@ void SysexComponent::parseMidiInput(const MidiMessage& message)
     uint8_t fatar2 =	message.getSysExData()[1];
     uint8_t fatar3 =	message.getSysExData()[2];
     uint8_t prodId =	message.getSysExData()[3];
-    uint8_t hostId =	message.getSysExData()[4];
-    uint8_t deviceId =	message.getSysExData()[5];
+    uint8_t deviceID1 =	message.getSysExData()[4];
+    uint8_t deviceID2 =	message.getSysExData()[5];
     
     // Verify the identity of the message
     if (fatar1		!= FATAR_SYSEX_ID[0] ||
         fatar2		!= FATAR_SYSEX_ID[1] ||
         fatar3		!= FATAR_SYSEX_ID[2] ||
-        prodId		!= PRODUCT_ID  ||
-        hostId		!= REMOTE_HOST_ID ) return;
+        prodId		!= PRODUCT_ID  ) return;
     
     // Extract specific elements of the message
-    uint8_t item_id = message.getSysExData()[6];
-    uint8_t item_num = message.getSysExData()[7];
-    uint8_t item_val = message.getSysExData()[8];
+    uint8_t item_type = message.getSysExData()[6];
+    uint8_t item_function = message.getSysExData()[7];
+    uint8_t data = message.getSysExData()[8];
     
-	if (item_num == SYSTEM_LOGIN_CONFIRMATION || item_num == SYSTEM_LOGIN_RECALL)
-		connectedDeviceID = deviceId;
-    // Handle the message elements based on their ID
-    switch (item_id)
+    if (item_function == SYSTEM_LOGIN_CONFIRMATION || item_function == SYSTEM_LOGIN_RECALL)
     {
+        auto it = std::find(deviceID.begin(), deviceID.end(), std::array<uint8_t, 2>{deviceID1, deviceID2});
+
+        if (it == deviceID.end()) return;
+
+        connectedDeviceIDX = std::distance(deviceID.begin(), it);
+        connectedDeviceID[0] = deviceID1;
+        connectedDeviceID[1] = deviceID2;
+
+    }
+    // Handle the message elements based on their ID
+    switch (item_type)
+    {
+        case ITEM_IDENTIFICATION:
+            handleIdentificationMessage(item_function, data, deviceID1, deviceID2);
+            break;
         case ITEM_SYSTEM_SYSTEM:
             // Handle system messages
-            handleSystemMessage(item_num, item_val);
+            handleSystemMessage(item_function, data);
             break;
             
         case ITEM_BUTTON:
             // Handle button messages
-            handleButtonMessage(item_num, item_val);
+            handleButtonMessage(item_function, data);
             break;
             
         case ITEM_ENCODER:
             // Handle encoder messages
-            handleEncoderMessage(item_num, item_val);
+            handleEncoderMessage(item_function, data);
             break;
     }
 }
@@ -320,7 +419,7 @@ void SysexComponent::drawScreen()
 
 	PLOT_RECT(0, 0, LCD_WIDTH, 100,
 		155, 127, 64);
-	PLOT_TEXT("Hello device " + String(connectedDeviceID) + ", turn encoder 1", 10, 40, 300, TEXT_ALIGN_CENTER, TEXT_SIZE_MIDDLE,
+	PLOT_TEXT("Hello device " + String(connectedDeviceIDX) + ", turn encoder 1", 10, 40, 300, TEXT_ALIGN_CENTER, TEXT_SIZE_MIDDLE,
 		0, 0, 0,
 		155, 127, 64);
 
@@ -328,6 +427,37 @@ void SysexComponent::drawScreen()
 		11, 111, 111);
 
 	PLOT_BITMAP( 277, 197, 0x7F, 0, 0, 0, 0, 0, 0, 0 );
+}
+
+void SysexComponent::handleIdentificationMessage(uint8_t item_num, uint8_t item_val, uint8_t deviceID1, uint8_t deviceID2)
+{
+    std::array<uint8_t, 2> device{ deviceID1, deviceID2 };
+    auto it = std::find(deviceID.begin(), deviceID.end(), device);
+
+    if (it == deviceID.end()) return;
+
+    uint8_t idx = std::distance(deviceID.begin(), it);
+
+    switch (item_num)
+    {
+    case IDENTIFICATION_APPROVED:
+        deviceStatus[idx] = DEVICE_IDENTIFIED;
+        DBG("DEVICE IDX=" + String(idx) + " APPROVED");
+        break;
+    case IDENTIFICATION_REJECTED:
+        if (deviceStatus[idx] != DEVICE_IDENTIFIED)
+        {
+            deviceStatus[idx] = DEVICE_REJECTED;
+        }
+        else if(idx == 0)
+        {
+            deviceStatus[DEVICE_NUMBER - 1] = DEVICE_REJECTED;
+        }
+
+        DBG("DEVICE IDX=" + String(idx) + " REJECTED. REASON=" + String(item_val) + "(ID#1=" + String(deviceID1) + ", ID#2=" + String(deviceID2) + ")");
+
+        break;
+    }
 }
 
 void SysexComponent::handleSystemMessage(uint8_t item_num, uint8_t item_val)
@@ -484,7 +614,8 @@ void SysexComponent::LED_RGB(uint8_t num, uint8_t r, uint8_t g, uint8_t b, uint8
 {
 	// Convert from 8 8 8 to 7 7 7
 	std::vector<uint8_t> sysexMessage = BASE_MESSAGE;
-	sysexMessage.push_back(connectedDeviceID);
+	sysexMessage.push_back(connectedDeviceID[0]);
+	sysexMessage.push_back(connectedDeviceID[1]);
 	b = b >> 1;
 
 	// Start with the manufacturer ID
@@ -550,7 +681,8 @@ void SysexComponent::PLOT_TEXT(String text,
 	b_back = b_back >> 1;
     
 	std::vector<uint8_t> sysexMessage = BASE_MESSAGE;
-	sysexMessage.push_back(connectedDeviceID);
+	sysexMessage.push_back(connectedDeviceID[0]);
+	sysexMessage.push_back(connectedDeviceID[1]);
     b_back = b_back >> 1;
     
     // tipo di item: display LCD
@@ -620,7 +752,8 @@ void SysexComponent::PLOT_RECT(uint16_t x,
 	b = b >> 1;
 
 	std::vector<uint8_t> sysexMessage = BASE_MESSAGE;
-	sysexMessage.push_back(connectedDeviceID);
+	sysexMessage.push_back(connectedDeviceID[0]);
+	sysexMessage.push_back(connectedDeviceID[1]);
     b = b >> 1;
     
     // tipo di item: display LCD
@@ -678,7 +811,8 @@ void SysexComponent::PLOT_BITMAP(uint16_t x,
 	b_back = b_back >> 1;
     
     std::vector<uint8_t> sysexMessage = BASE_MESSAGE; //{FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID,REMOTE_HOST_ID};
-	sysexMessage.push_back(connectedDeviceID);
+	sysexMessage.push_back(connectedDeviceID[0]);
+	sysexMessage.push_back(connectedDeviceID[1]);
     
     // tipo di item: display LCD
     sysexMessage.push_back(ITEM_LCD);
@@ -722,7 +856,8 @@ void SysexComponent::CLEAR_LCD(uint8_t r, uint8_t g, uint8_t b)
 {
     // Convert from 8 8 8 to 7 7 7
 	std::vector<uint8_t> sysexMessage = BASE_MESSAGE; // { FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID, REMOTE_HOST_ID };
-	sysexMessage.push_back(connectedDeviceID);
+	sysexMessage.push_back(connectedDeviceID[0]);
+	sysexMessage.push_back(connectedDeviceID[1]);
 
     // tipo di item: display LCD
     sysexMessage.push_back(ITEM_LCD);

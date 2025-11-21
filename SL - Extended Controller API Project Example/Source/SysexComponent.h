@@ -54,6 +54,13 @@ typedef enum
 	
 } system_type;
 
+typedef enum
+{
+	IDENTIFICATION_REQUEST,
+	IDENTIFICATION_APPROVED,
+	IDENTIFICATION_REJECTED
+} identification_type;
+
 //------------------------------------------
 typedef enum
 {
@@ -64,7 +71,8 @@ typedef enum
     ITEM_LCD,
     ITEM_LED_RGB,
     ITEM_PEDAL,
-    ITEM_VOLUME
+    ITEM_VOLUME,
+	ITEM_IDENTIFICATION = 0x7F
 } item_type;
 
 //------------------------------------------
@@ -194,6 +202,13 @@ typedef enum
     TEXT_ALIGN_RIGHT     // alignement: right
 } text_align;
 
+typedef enum
+{
+	DEVICE_UNIDENTIFIED,
+	DEVICE_IDENTIFIED,
+	DEVICE_REJECTED
+} device_status;
+
 //=========================================================================
 /**
  */
@@ -210,7 +225,8 @@ public:
     
     // Send MIDI Message
     void sendMidiMessage(const MidiMessage& sysMsg);
-    void sendIdentity();
+    void sendIdentificationRequest(unsigned short deviceNum);
+    void sendIdentity(unsigned short deviceNum);
 	void sendIcon(uint8_t packet_size);
     void logoutRequest();
     
@@ -255,7 +271,11 @@ private:
     std::vector<MidiMessage> queueIn;
     std::vector<MidiMessage> queueOut;
 
-	uint8_t connectedDeviceID;
+	std::vector<std::array<uint8_t,2>> deviceID;
+	std::vector<device_status> deviceStatus;
+
+	uint8_t connectedDeviceID[2];
+	uint8_t connectedDeviceIDX;
 
     int myEncoderValue = 0;
     
@@ -264,7 +284,11 @@ private:
     void handleIncomingMidiMessage(MidiInput* source, const MidiMessage& message) override;
     void timerCallback(int timerID) override;
 
+	void manageLogin();
+
+	uint8_t getIndexByID(uint8_t deviceID1, uint8_t deviceID2);
     void parseMidiInput(const MidiMessage& message);
+	void handleIdentificationMessage(uint8_t item_num, uint8_t item_val, uint8_t deviceID1, uint8_t deviceID2);
     void handleSystemMessage(uint8_t item_num, uint8_t item_val);
     void handleButtonMessage(uint8_t item_num, uint8_t item_val);
     void handleEncoderMessage(uint8_t item_num, uint8_t item_val);

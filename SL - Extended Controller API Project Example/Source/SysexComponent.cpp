@@ -19,6 +19,7 @@ constexpr uint8_t PRODUCT_ID = 0x16;
 constexpr uint8_t REMOTE_HOST_ID = 0x01; // 0x01 NumaPlayer; 0x02 Camelot; 0x03 MyDevice etc.
 constexpr uint8_t REMOTE_DEVICE_ID = 0x00;
 constexpr uint8_t DEVICE_NUMBER = 22;
+constexpr char SL_MODEL[3][6] = {"88GT\0", "88\0\0\0", "73\0\0\0"};
 const String MY_DEVICE_NAME = "MY DEVICE";
 
 #define BASE_MESSAGE {FATAR_SYSEX_ID[0], FATAR_SYSEX_ID[1], FATAR_SYSEX_ID[2], PRODUCT_ID }
@@ -36,6 +37,8 @@ SysexComponent::SysexComponent()
     });
 
     deviceStatus.assign(DEVICE_NUMBER, DEVICE_UNIDENTIFIED);
+    firmwareVersion.fill(0);
+    SL_model = 0;
     
     startTimer(TIMER_MIDI_PORT, 1500);
     startTimer(TIMER_MIDI_OUT, 1);
@@ -399,7 +402,7 @@ void SysexComponent::parseMidiInput(const MidiMessage& message)
             break;
         case ITEM_SYSTEM_SYSTEM:
             // Handle system messages
-            handleSystemMessage(item_function, data);
+            handleSystemMessage(item_function, data, message);
             break;
             
         case ITEM_BUTTON:
@@ -426,7 +429,12 @@ void SysexComponent::drawScreen()
 	PLOT_RECT( 10, 120, 300, 28,
 		11, 111, 111);
 
-	PLOT_BITMAP( 277, 197, 0x7F, 0, 0, 0, 0, 0, 0, 0 );
+    PLOT_TEXT("Fimrware " + String(firmwareVersion[0]) + "." + String(firmwareVersion[1]) + "." + String(firmwareVersion[2]) + ", SL" + SL_MODEL[SL_model],
+        10, 210, 300, TEXT_ALIGN_LEFT, TEXT_SIZE_SMALL,
+        0, 0, 0,
+        155, 127, 64);
+
+    PLOT_BITMAP(277, 197, 0x7F, 0, 0, 0, 0, 0, 0, 0);
 }
 
 void SysexComponent::handleIdentificationMessage(uint8_t item_num, uint8_t item_val, uint8_t deviceID1, uint8_t deviceID2)
@@ -460,7 +468,7 @@ void SysexComponent::handleIdentificationMessage(uint8_t item_num, uint8_t item_
     }
 }
 
-void SysexComponent::handleSystemMessage(uint8_t item_num, uint8_t item_val)
+void SysexComponent::handleSystemMessage(uint8_t item_num, uint8_t item_val, MidiMessage msg )
 {
     switch (item_num)
     {
@@ -480,6 +488,10 @@ void SysexComponent::handleSystemMessage(uint8_t item_num, uint8_t item_val)
 
         case SYSTEM_LOGIN_CONFIRMATION:
             DBG("login confirmation");
+            firmwareVersion[0] = msg.getSysExData()[8];
+            firmwareVersion[1] = msg.getSysExData()[9];
+            firmwareVersion[2] = msg.getSysExData()[10];
+            SL_model = msg.getSysExData()[11];
 			sendIcon(0);
             // update LCD
             

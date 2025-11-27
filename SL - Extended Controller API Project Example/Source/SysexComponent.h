@@ -273,6 +273,8 @@ private:
 
 	std::vector<std::array<uint8_t,2>> deviceID;
 	std::vector<device_status> deviceStatus;
+	std::array<uint8_t, 3> firmwareVersion;
+	uint8_t SL_model;
 
 	uint8_t connectedDeviceID[2];
 	uint8_t connectedDeviceIDX;
@@ -289,7 +291,7 @@ private:
 	uint8_t getIndexByID(uint8_t deviceID1, uint8_t deviceID2);
     void parseMidiInput(const MidiMessage& message);
 	void handleIdentificationMessage(uint8_t item_num, uint8_t item_val, uint8_t deviceID1, uint8_t deviceID2);
-    void handleSystemMessage(uint8_t item_num, uint8_t item_val);
+    void handleSystemMessage(uint8_t item_num, uint8_t item_val, MidiMessage msg);
     void handleButtonMessage(uint8_t item_num, uint8_t item_val);
     void handleEncoderMessage(uint8_t item_num, uint8_t item_val);
     

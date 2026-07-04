@@ -6,7 +6,7 @@ The Device is responsible for the first communication with the keyboard, and mus
 
 After receiving an ***Identification Approved*** message from the SLMK2 the Device is listed in the available apps menu (reached by pressing the APP button on the Keyboard).  
 
-From this moment on the Device must send a ***System Device Acknowledge*** message continuously at a rate of less than one every 5 seconds (e.g. one every 3/4 seconds).  
+From this moment on the Device must send a ***System Device Notification*** message continuously at a rate of less than one every 5 seconds (e.g. one every 3/4 seconds).
 If the SLMK2 does not receive this message for more than 5 seconds the Device will not be listed in the App Menu anymore.  
 In this case, in order to be listed again among the available apps, the Device must send a new ***Identification Request*** message.
 
@@ -82,7 +82,7 @@ If the given DeviceID is not already taken by some other Device, and there is st
 </tbody>
 </table>
 
-Upon receiving this value, the Device should proceed to send the ***System Device Acknowledge*** message at a rate of less than one every 5 seconds.
+Upon receiving this value, the Device should proceed to send the ***System Device Notification*** message at a rate of less than one every 5 seconds.
 
 ### Identification Rejected Message
 

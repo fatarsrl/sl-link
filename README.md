@@ -41,7 +41,7 @@ Annual conference focused on audio development, often featuring JUCE-related con
 - [MIDI Projects on GitHub](https://github.com/topics/midi): Explore various MIDI-related projects on GitHub.
 
 **Books and Guides**
-- [Designing Audio Effect Plug-Ins in C++](https://www.amazon.com/Designing-Audio-Effect-Plug-Ins-Software/dp/1138499710): A book by Will Pirkle that provides an in-depth look at audio effect plugin design using C++ and frameworks like JUCE.
-- [MIDI Power!: The Comprehensive Guide](https://www.amazon.com/MIDI-Power-Comprehensive-Robert-Gu%C3%A9rin/dp/1598630842): A comprehensive guide to understanding and using MIDI technology.
+- [Designing Audio Effect Plug-Ins in C++](https://a.co/d/04GYhWIC): A book by Will Pirkle that provides an in-depth look at audio effect plugin design using C++ and frameworks like JUCE.
+- [MIDI Power!: The Comprehensive Guide](https://a.co/d/00SjvSUf): A comprehensive guide to understanding and using MIDI technology.
 
 This reference section includes essential links for getting started and diving deeper into Studiologic products, JUCE framework, and MIDI technology.

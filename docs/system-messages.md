@@ -205,7 +205,7 @@ Although its designed to store a single personal Device logo, these mechanics al
 Moreover it must be known that the estimated time for a complete icon transfer is measured between 50 to 70 milliseconds, that is a heavy burden for the keyboard, but on the other hand the transfer mechanics give to the Device a fair control on how much data to send and when.
 
 After receiving all the data, the SLMK2 stores the icon in association with the (*HostID*, *DeviceID*) couple, and will remember it also after a Logout is performed or even a timeout occurs.  
-The image can then be printed on screen via a [*Plot Device Icon message*](plot-device-icon-message) (see the [Display Messages](./display-messages.md) section).  
+The image can then be printed on screen via a [*Plot Device Icon message*](./display-messages.md#plot-device-icon-message) (see the [Display Messages](./display-messages.md) section).
 The SLMK2 is capable of storing 1 icon per Device for a total of 10 Devices, and will forget about an image in three ways:
 
 1.	When the keyboard is turned off by the user.

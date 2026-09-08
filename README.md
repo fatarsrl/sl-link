@@ -2,7 +2,7 @@
 
 <div align="center">
 
-### 🎹 **[--> WEB DOCUMENTATION <--](http://127.0.0.1:8000/)** 🎹  
+### 🎹 **[--> WEB DOCUMENTATION <--](https://fatarsrl.github.io/sl-link/)** 🎹  
 <i></i>
 </div>
 

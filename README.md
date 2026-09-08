@@ -1,9 +1,15 @@
 # SL Link - Extended Controller API
 
+<div align="center">
+
+### 🎹 **[--> WEB DOCUMENTATION <--](http://127.0.0.1:8000/)** 🎹  
+<i></i>
+</div>
+
 The SL Link - Extended Controller API provides comprehensive functionality for managing the connection, communication, and display interaction between SLMK2 and the remote device, ensuring optimal performance and user experience.
 
 The communication protocol employed is MIDI, leveraging the transmission and reception of 'System Exclusive' messages. This approach ensures compatibility and flexibility in data exchange between devices, adhering to MIDI standards while accommodating proprietary functionalities specific to the SLMK2 and the connected remote device.
-<br>The SLMK2 receives and sends SL-Link messages on the port called “SL LINK” on macOS and MIDIN3/MIDIOUT3 on Windows.
+<br>The SLMK2 receives and sends SL-Link messages on the port called “*SL LINK*” on macOS, and *MIDIN3*/*MIDIOUT3* on Windows.
 
 - [Basics](docs/basics.md)
 - [SL Link message structure](docs/message-structure.md)
@@ -15,7 +21,7 @@ The communication protocol employed is MIDI, leveraging the transmission and rec
 ---
 
 - [Appendix A](docs/appendix-a.md)
-- [JUCE MIDI example project](./examples/juce_midi_example_project/readme.md)
+- [JUCE MIDI example project](examples/juce_midi_example_project/readme.md)
 
 ## References
 

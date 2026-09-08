@@ -205,7 +205,7 @@ Although its designed to store a single personal Device logo, these mechanics al
 Moreover it must be known that the estimated time for a complete icon transfer is measured between 50 to 70 milliseconds, that is a heavy burden for the keyboard, but on the other hand the transfer mechanics give to the Device a fair control on how much data to send and when.
 
 After receiving all the data, the SLMK2 stores the icon in association with the (*HostID*, *DeviceID*) couple, and will remember it also after a Logout is performed or even a timeout occurs.  
-The image can then be printed on screen via a [*Plot Device Icon message*](plot-device-icon-message) (see the [Display Messages](./display-messages.md) section).  
+The image can then be printed on screen via a *Plot Device Icon message* (see the [Display Messages](display-messages.md) section).  
 The SLMK2 is capable of storing 1 icon per Device for a total of 10 Devices, and will forget about an image in three ways:
 
 1.	When the keyboard is turned off by the user.
@@ -235,7 +235,7 @@ As mentioned above, the MIDI standard requires the Most Significant Bit of all t
 This forces us to encapsulate our 16-bit 565 format in a three byte format.  
 Taking as an example the first pixel of the image P0, the top left one, we will store its two most significant bits in the P0A byte, the next seven bits in the P0B byte and the seven least significant bits in the P0C byte.
 
-![](../res/pixel0-data.png)
+![](res/pixel0-data.png)
 
 A convenient function to convert from 16-bit format to 3-byte MIDI data format is given:
 
@@ -283,4 +283,5 @@ In this case, the message will contain the Packet Number the SLMK2 is awaiting n
 
 As mentioned above, the keyboard is storing the Packet Number that is waiting for (that is zero if no Logo is present, or the last PNUM received plus one), meaning that upon receiving an Nack message with a given PNUM, all the *System Send Icon* with a Packet Number less than PNUM were successfully received.
 
-[Back to index](../README.md)
+[Back to index](index.md)
+<!-- [Back to index](../README.md) -->

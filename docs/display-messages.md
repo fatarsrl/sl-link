@@ -230,4 +230,5 @@ The **ALIG** and **SIZE** bytes take values according to the following tables:
 | `0x01` | Medium (22px) |
 | `0x02` | Big (33px) |
 
-[Back to index](../README.md)
+[Back to index](index.md)
+<!-- [Back to index](../README.md) -->

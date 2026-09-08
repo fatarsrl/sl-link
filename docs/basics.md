@@ -40,4 +40,5 @@ This example identifies a specific SL-Link message that can be decoded using thi
 
 [^1]: For a detailed Sysex and MIDI reference, see [MIDI 1.0 Detailed Specification](https://midi.org/midi-1-0-detailed-specification).
 
-[Back to index](../README.md)
+[Back to index](index.md)
+<!-- [Back to index](../README.md) -->

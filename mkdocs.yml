@@ -1,0 +1,44 @@
+site_name: SL Link - Extended Controller API
+
+theme:
+  name: material
+  logo: res/studiologic_logo_light.png
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - footnotes
+
+nav:
+  - Home: index.md
+  - Basics: basics.md
+  - Message Structure: message-structure.md
+  - Messages:
+      - Identification Messages: identification-messages.md
+      - System Messages: system-messages.md
+      - Display Messages: display-messages.md
+      - Hardware I/O: hardware-io.md
+  - Appendix:
+      - Appendix A: appendix-a.md
+
+extra_css:
+  - stylesheets/extra.css
+
+
+copyright: >
+  Copyright &copy; 2026 Studiologic —
+  <a href="https://www.studiologic-music.com" target="_blank" rel="noopener noreferrer">
+    Official website
+  </a>

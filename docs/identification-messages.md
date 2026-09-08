@@ -6,7 +6,7 @@ The Device is responsible for the first communication with the keyboard, and mus
 
 After receiving an ***Identification Approved*** message from the SLMK2 the Device is listed in the available apps menu (reached by pressing the APP button on the Keyboard).  
 
-From this moment on the Device must send a ***System Device Acknowledge*** message continuously at a rate of less than one every 5 seconds (e.g. one every 3/4 seconds).  
+From this moment on the Device must send a ***System Device Notification*** message continuously at a rate of less than one every 5 seconds (e.g. one every 3/4 seconds).  
 If the SLMK2 does not receive this message for more than 5 seconds the Device will not be listed in the App Menu anymore.  
 In this case, in order to be listed again among the available apps, the Device must send a new ***Identification Request*** message.
 
@@ -19,7 +19,7 @@ In this way, in case the Device is a software, different instances will automati
 Every number is accepted with the exception of the couples (`0x00`, `0x00`) and (`0x01`, `0x00`)  that are reserved by Studiologic.  
 
 
-If a DeviceID is already listed in the App Menu, or a reserved Device ID is sent (e.g. `0x00`, `0x00`), an ***Identification Rejected*** message with a RSN Byte of `0x00` is sent as a response to the ***Identification Request*** message (see [***Identification Rejected Message***](#identification-rejected-message).  
+If a DeviceID is already listed in the App Menu, or a reserved Device ID is sent (e.g. `0x00`, `0x00`), an ***Identification Rejected*** message with a RSN Byte of `0x00` is sent as a response to the ***Identification Request*** message (see [***Identification Rejected Message***](#identification-rejected-message)).  
 In this case the Device must generate a new ID and try the Identification again.
 
 Another case of rejection is when the App List is full, and an ***Identification Rejected*** message with a RSN Byte of `0x01` is sent from the SLMK2 to the Device.  
@@ -128,4 +128,5 @@ The `IDF` byte indicate the identification status:
 | `0x00` | DeviceID is not identified on the machine |
 | `0x01` | DeviceID is already identified |
 
-[Back to index](../README.md)
+[Back to index](index.md)
+<!-- [Back to index](../README.md) -->

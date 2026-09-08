@@ -6,31 +6,31 @@ Specifically, we refer to the control of LEDs, Encoders, and buttons.
 ## The SLMK2 Layout
 
 Before proceeding, a brief presentation of the SLMK2 panel layout, illustrating all the leds and controls available.   
-We indicate with ![](../res/led.png) the presence of an LED in correspondence with a button or an encoder.
+We indicate with ![](res/led.png) the presence of an LED in correspondence with a button or an encoder.
 
 The lcd panel appear as follows:
 
-![](../res/display.png)
+![](res/display.png)
 
 | Symbol | Name | Description |
 | :---: | :---: | ----- |
-| ![](../res/icon-app.png) | **App** | The button that the user presses to enter in SL-Link mode. For this reason it is not available to the Device. |
-| ![](../res/icon-setting.png) | **Global** | Global button. With LED. |
-| ![](../res/icon-daw.png) | **Daw** | Daw button. With LED. |
-| ![](../res/icon-apply.png) | **Apply** | Apply button |
-| ![](../res/icon-cancel.png) | **Cancel** | Cancel Button |
-| ![](../res/icon-home.png) | **Home** | Home button. When the SLMK2 is not in SL-Link mode, this button goes back to the main screen. It is recommended to use this in a similar way. |
-| ![](../res/joystick.png) | **Joystick** | The Joystick has a builtin encoder and five buttons: one for each direction plus a central main one. |
+| ![](res/icon-app.png) | **App** | The button that the user presses to enter in SL-Link mode. For this reason it is not available to the Device. |
+| ![](res/icon-setting.png) | **Global** | Global button. With LED. |
+| ![](res/icon-daw.png) | **Daw** | Daw button. With LED. |
+| ![](res/icon-apply.png) | **Apply** | Apply button |
+| ![](res/icon-cancel.png) | **Cancel** | Cancel Button |
+| ![](res/icon-home.png) | **Home** | Home button. When the SLMK2 is not in SL-Link mode, this button goes back to the main screen. It is recommended to use this in a similar way. |
+| ![](res/joystick.png) | **Joystick** | The Joystick has a builtin encoder and five buttons: one for each direction plus a central main one. |
 
 On the left of the LCD we have the control section, composed by six encoders and four buttons:
 
-![](../res/panel.png)
+![](res/panel.png)
 
 | Symbol | Name | Description |
 | :---: | :---: | ----- |
-| ![](../res/zone-encoder.png) | **Zone Encoder** | These are encoders with a built-in push button and RGB LED. The encoders are numbered from one to four. |
-| ![](../res/ab-encoder.png) | **A/B Encoder** | Like the previous ones, these have a built-in push button, but are equipped with a White LED. |
-| ![](../res/zone-button.png) | **Zone buttons** | These are simple push buttons numbered from one to four, equipped with a White LED. |
+| ![](res/zone-encoder.png) | **Zone Encoder** | These are encoders with a built-in push button and RGB LED. The encoders are numbered from one to four. |
+| ![](res/ab-encoder.png) | **A/B Encoder** | Like the previous ones, these have a built-in push button, but are equipped with a White LED. |
+| ![](res/zone-button.png) | **Zone buttons** | These are simple push buttons numbered from one to four, equipped with a White LED. |
 
 ## Hardware I/O messages
 
@@ -279,4 +279,5 @@ For retrocompatibility the MUTE byte can be omitted.
 If the Device send a read message the R/W byte is set to 0 and the VOL byte can be omitted.
 The SLMK2 will answer with a read message (byte R/W set to zero) with the VOL byte containing the current audio board volume and the MUTE one containing the mute/unmute status (respectively 1 or 0).
 
-[Back to index](../README.md)
+[Back to index](index.md)
+<!-- [Back to index](../README.md) -->

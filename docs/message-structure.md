@@ -76,7 +76,7 @@ We present a brief list of these categories below; each one will be addressed in
 
 | ItemType | Corresponding message |
 |:---:|:---|
-| `0x7F` | identification Messages |
+| `0x7F` | Identification Messages |
 | `0x00` | System Messages |
 | `0x04` | Display Messages |
 | `0x01` | **Button messages**[^1] |
@@ -101,4 +101,5 @@ One-way messages from the device to the SL-mk2 for writing to the LCD using text
 4. **Hardware I/O ( ItemType = `0x01`, `0x02`, `0x03`, `0x05`, `0x06`)**  
 Messages carrying user-interaction events from encoders, buttons, LEDs, RGB LEDs, pedals, and for retrieving or storing hardware settings.
 
-[Back to index](../README.md)
+[Back to index](index.md)
+<!-- [Back to index](../README.md) -->

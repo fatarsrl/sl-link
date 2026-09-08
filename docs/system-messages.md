@@ -176,7 +176,7 @@ This is the second response to the *System Login Message*:
 
 This message has the same function of the *System Login Confirmation Message*: as the previous one is sent when the user selects the device on the Device List to activate the interaction with it.
 
-The difference is that this message implies that an icon is already stored for the given (*HostID*, *DeviceID*) couple, meaning that the Device no longer needs to send it (unless he wants to replace it).
+The difference is that this message implies that an icon is already stored for the given *DeviceID* couple, meaning that the Device no longer needs to send it (unless he wants to replace it).
 
 As the *System Login Confirmation Message*, this one contains the firmware version and the SLMK2 keyboard model that is accepting the login.
 
@@ -204,7 +204,7 @@ If something goes wrong, the keyboard sends a *System Icon Nack Message* that wi
 Although its designed to store a single personal Device logo, these mechanics allow the sending of different icons during the interaction with the SLMK2, but one must remember that only one image is stored at time (so sending a new one will overwrite the old one), and that the SLMK2 does not store any information about the icon other than the raw pixel data, meaning that the Device is responsible of keeping track of the icon present in the keyboard RAM.  
 Moreover it must be known that the estimated time for a complete icon transfer is measured between 50 to 70 milliseconds, that is a heavy burden for the keyboard, but on the other hand the transfer mechanics give to the Device a fair control on how much data to send and when.
 
-After receiving all the data, the SLMK2 stores the icon in association with the (*HostID*, *DeviceID*) couple, and will remember it also after a Logout is performed or even a timeout occurs.  
+After receiving all the data, the SLMK2 stores the icon in association with the *DeviceID* couple, and will remember it also after a Logout is performed or even a timeout occurs.  
 The image can then be printed on screen via a *Plot Device Icon message* (see the [Display Messages](display-messages.md) section).  
 The SLMK2 is capable of storing 1 icon per Device for a total of 10 Devices, and will forget about an image in three ways:
 
@@ -224,7 +224,7 @@ This is the message used to transfer the 565 color data of the Device’s Logo.
 As said before, the device has the possibility to temporarily store a 32x32 Logo in the SLMK2 RAM, and must transfer it via 16 packets of two rows each (64 pixels per transfer).
 
 The *PNUM* (Packet Number) byte, indicates what slice of the Logo is sent in the current message.  
-A PNUM of zero, starts a new Logo transfer and tells the SLMK2 to overwrite any existing image associated with the (*HostID*, *DeviceID*).
+A PNUM of zero, starts a new Logo transfer and tells the SLMK2 to overwrite any existing image associated with the *DeviceID*.
 
 The SLMK2 will then answer with a System Icon Ack message, reporting the PNUM that has just been received.  
 The Device is then able to send the next packet (PNUM = `1`), and the cycle repeats.

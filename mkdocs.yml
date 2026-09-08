@@ -1,4 +1,5 @@
 site_name: SL Link - Extended Controller API
+site_url: https://fatarsrl.github.io/sl-link/
 
 theme:
   name: material
